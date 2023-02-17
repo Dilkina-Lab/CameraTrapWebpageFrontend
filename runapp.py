@@ -5,6 +5,20 @@ import csv
 import json
 import pandas as pd
 import nest_asyncio
+import os
+import time
+
+import sys
+
+# Add the directory to the search path
+sys.path.insert(1,'/Users/nicolerussack/PycharmProjects/CameraTrapWebpge/CameraTrapWebpageBackend/scrpy/src')
+print(sys.path)
+import simulate_estimate
+
+
+
+# Import the function "my_function" from the file "my_module.py"
+# print(simulate_estimate.testFunction())
 
 #add nest_asyncio to avoid RuntimeError: This event loop is already running
 nest_asyncio.apply()
@@ -30,7 +44,7 @@ if __name__ == '__main__':
     # -------------------------------------------------------------------------------- #
     # CREATE AND SET UP A BOTTLE APPLICATION FOR THE WEB UI
     # -------------------------------------------------------------------------------- #
-    
+
     webapp = bottle.Bottle()
     webapp.add_hook("after_request", enable_cors)
     webapp_server_kwargs = {
@@ -50,13 +64,14 @@ if __name__ == '__main__':
     ## dynamic routes
     @webapp.route('/getCSV', method='POST')
     def getCSV():
+        print("In get CSV")
         # data = bottle.request.json
         # with open('location_data_lat_long.csv') as csvfile:
         #     readCSV = csv.reader(csvfile, delimiter=',')
         #     count = 0
         #     data['locations'] = []
         #     for row in readCSV:
-        #         data['locations'].append([row[0], row[1], row[2]]) 
+        #         data['locations'].append([row[0], row[1], row[2]])
         #         print(row[0], row[1], row[2])
         # bottle.response.content_type = 'application/json'
         # bottle.response.status = 200
@@ -72,7 +87,7 @@ if __name__ == '__main__':
             result = {}
             result['locations'] = []
             for row in readCSV:
-                result['locations'].append([row[0], row[1], row[2]]) 
+                result['locations'].append([row[0], row[1], row[2]])
                 print(row[0], row[1], row[2])
         bottle.response.content_type = 'application/json'
         bottle.response.status = 200
@@ -84,27 +99,38 @@ if __name__ == '__main__':
     @webapp.route('/savetoCSV', method='POST')
     def savetoCSV():
         data = bottle.request.json
-        print("in save to csv")
-        print(data)
-        print(data[0])
-        print(data[0]['lat'])
-        print(type(data))
-        # with open('data.json', 'w') as write_file:
-        #     json.dump(data, write_file, indent=2)
         s = json.dumps(data)
-        # with open('s.json', 'w') as write_file:
-        #     json.dump(s, write_file, indent=2)
-        print(s)
-        print(type(s))
         df = pd.read_json(s)
         df.to_csv('markers.csv')
-        print("after pandas")
-        print("after export csv")
         bottle.response.content_type = 'application/json'
         bottle.response.status = 200
-        print("before return")
         return s
-    
- 
+
+
+    @webapp.route('/writeConfigFile', method='POST')
+    def writeConfigFile():
+        print("In write config file")
+        data = bottle.request.json
+        s = json.dumps(data)
+        print("this is the data " + s)
+        df = pd.read_json(s)
+        df.to_csv('config.csv')
+        bottle.response.content_type = 'application/json'
+        bottle.response.status = 200
+        return s
+
+
+    @webapp.route('/analyzeLocations', method='POST')
+    def analyzeLocations():
+        print("in analyzeLocations")
+        data = simulate_estimate.testFunction()
+        # with open(filename) as f:
+        #     code = f.read()
+        #
+        # a = exec(code)
+        print("This is the reusel " + str(data))
+        return data
+
+
 
     webapp.run(**webapp_server_kwargs)

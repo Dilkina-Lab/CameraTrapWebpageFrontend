@@ -2,19 +2,101 @@
 
 <html>
 <head>
+
+    <style>
+   .switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* The slider */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+    </style>
     <title>Camera Trap Webpage</title>
 
 
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+
+    <!-- added jacks -->
+<!--    &lt;!&ndash; Leaflet &ndash;&gt;-->
+<!--    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"-->
+<!--          integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="-->
+<!--          crossorigin=""/>-->
+<!--    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"-->
+<!--            integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="-->
+<!--            crossorigin=""></script>-->
+<!--    <script src="https://unpkg.com/@mapbox/leaflet-pip@latest/leaflet-pip.js"></script>-->
+<!--    &lt;!&ndash; Leaflet Ajax &ndash;&gt;-->
+<!--    <script type='text/javascript' src="./js/leaflet.ajax.js"></script>-->
+<!--&lt;!&ndash;    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin=""/>&ndash;&gt;-->
+<!--&lt;!&ndash;    <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js" integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew==" crossorigin=""></script>&ndash;&gt;-->
+<!--    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">-->
+    <!-- jacks ended -->
+
+
     <link rel="shortcut icon" type="image/x-icon" href="docs/images/favicon.ico" />
     <link href="https://api.mapbox.com/mapbox-gl-js/v2.7.0/mapbox-gl.css" rel="stylesheet">
     <script src="https://api.mapbox.com/mapbox-gl-js/v2.7.0/mapbox-gl.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin=""/>
     <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js" integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew==" crossorigin=""></script>    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="css/bootstrap.css">
-    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link rel="stylesheet" type="text/css" href="static/css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="/Users/nicolerussack/PycharmProjects/CameraTrapWebpge/cameratrapswebpage/static/css/style.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 
@@ -35,7 +117,8 @@
     <script src="https://unpkg.com/georaster"></script>
     <script src="https://unpkg.com/proj4"></script>
     <script src="https://unpkg.com/georaster-layer-for-leaflet"></script>
-    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.5.0/jszip.min.js"></script>
+
     <style>
          body { margin: 0; padding: 0; }
          #map { position: absolute; top: 0; bottom: 0; width: 100%; }
@@ -45,7 +128,7 @@
 
     <div class="page-header">
         <h1 style="margin-left: 15px">Camera Traps </h1>
-        <div class="popup" onclick="helpButton()" style="float: right; margin-right: 50px; margin-bottom: 50px">Help
+        <div class="popup" onclick="helpButton()" style="float: right; margin-right: 50px; margin-bottom: 50px">
             <span class="popuptext" id="myPopup" style="display: none">Popup text...</span>
           </div>
         <!-- <button type="button" class="btn btn-warning pull-right" id="help" onclick="helpButton()">Help</button> -->
@@ -55,19 +138,30 @@
         <div class="row">
             <div class="col-lg-9">
                 <div id="mapid" style="width: 1000px; height: 800px;"></div>
+
             </div>
             <div class="col-lg-3">
-                <div class="card" style="width: 18rem;">
+                <div class="card" style="width: 50rem;">
                     <div class="card-body">
-                        <h5 class="card-title">Menu</h5>
-                        <input type="button"  value="Undo" onclick="unDo()">
+                        <h4>Menu</h4>
+                        <div style = "height: 30px;  display: flex; width: 300px;">
+                            <input style = "float: left;" type="button" value="Undo" onclick="unDo()" >
+                            <br>
+                            <input style = "float: right; width: 140px;" type="button" class="menu" value="Save Configuration" onclick="savetoCSV()"><br/>
+                              <input type="text" id="SaveValue" value = "save As"><br><br>
+                        </div>
+
+
+
+
                         <p class="card-text">
                         </p>
 
 
                         <div id="menu">
-
+                        <h4>Type of Map</h4>
                         <input id="satellite-v9" type="radio" name="rtoggle" value="satellite" checked="checked">
+                        <!-- See a list of Mapbox-hosted public styles at -->
                         <!-- See a list of Mapbox-hosted public styles at -->
                         <!-- https://docs.mapbox.com/api/maps/styles/#mapbox-styles -->
                         <label for="satellite-v9">satellite</label>
@@ -82,33 +176,69 @@
                         </div>
 
                         <!-- <a href="#" class="btn btn-primary" onclick="getCSV()">Load locations</a><br> -->
-                        <h4>Load a CSV File</h4>
+
+                        <h4>Load From A previous project </h4>
                         <input type="file" class="menu" id="file-selector" multiple/>
-                         <h4>Or Enter information</h4>
+                        <h4>Boundary</h4>
+                        <h5>GIS Boundary</h5>
+                        <input type="file" id="GISPolygon">
 
-                        <label>Top Left Corner Longitude:</label>
-                        <input type="text" id = "topLeftLong" name="fname"><br>
-                        <label>Top Left Corner Latatude:</label>
-                        <input type="text" id = "topLeftLat" name="fname"><br>
-                        <label>Bottom Right Corner Longitude:</label>
-                        <input type="text" id = "bottomRightLong" name="fname"><br>
-                        <label>Bottom Right Corner Latatude:</label>
-                        <input type="text" id = "bottomRightLat" name="fname"><br>
-                        <label >Number of Cameras</label>
-                        <input type="text"  id = "numberOfCameras" name="fname"><br>
+
+                         <h5> Or Manually Create boundary </h5>
+
+                        <div style = "display: flex;">
+                            <label style = "height: 40px; width: 200px">Top Left Longitude:</label>
+                            <input style = "height: 30px; width: 50px" type="text" id = "topLeftLong" name="fname"><br>
+                        </div>
+                        <div style = "display: flex;">
+                            <label style = "height: 40px; width: 200px">Top Left Latitude:</label>
+                            <input style = "height: 30px; width: 50px" type="text" id = "topLeftLat" name="fname"><br>
+                        </div>
+                        <div style = "display: flex;">
+                            <label style = "height: 40px; width: 200px">Bottom Right Longitude:</label>
+                            <input style = "height: 30px; width: 50px" type="text" id = "bottomRightLong" name="fname"><br>
+                        </div>
+                        <div style = "display: flex;">
+                            <label style = "height: 40px; width: 200px">Bottom Right Latitude:</label>
+                            <input style = "height: 30px; width: 50px" type="text" id = "bottomRightLat" name="fname"><br>
+                        </div>
+
+                        <h5> Select number of cameras </h5>
+                         <div style = "display: flex;">
+                            <label style = "height: 20px; width: 200px">Number of Cameras:</label>
+                            <input style = "height: 30px; width: 50px" type="text" id = "numberOfCameras" name="fname"><br>
+                        </div>
                         <input type="button" value="Enter" onclick="addMarkers()" ><br>
-                        <div id="overlay">
-                            <h4>Load a GeoTIFF Density File</h4>
-                            <input type="file" id="geotiff-file">
-                          </div>
 
-                        <input type="button" class="menu" value="Analyze Locations"><br>
-                        <input type="button" class="menu" value="Save Locations" onclick="savetoCSV()"><br/>
-                        
-                        <label>Backend Tiff Analysis:</label>
-                        <input type="file" id="BackendFile" value="BackendFile">
+
+                        <h4> Simulate </h4>
+                        <div>
+                            <h3>Load a GeoTIFF Suitability File</h3>
+                            <input type="file" id="geotiff-file">
+                            <div style = "display: flex;">
+                                <h5>Show GeoTIFF </h5>
+                                <label class="switch">
+                                      <input type="checkbox"  id="renderCheckbox">
+                                      <span class="slider round"></span>
+                                </label>
+
+                            </div>
+
+
+
+                          </div>
+                        <label style = "height: 20px; width: 200px">Number of Animals</label>
+                        <input style = "height: 30px; width: 50px" type="text" id = "numberOfAnimals" name="fname"><br>
+
+                        <input type="button" class="menu"  id="analuzebutton" value="Analyze Locations" onclick="analyzeLocations()" style = "background-color: grey"> <br>
+<!--                        <label>Load Boundaries (GeoJSON):</label>-->
+
+<!--                        <form onsubmit="download(this['name'].value, this['text'].value)">-->
+<!--                            <input type="button" class="menu" value="Save Configuration" onclick="savetoCSV()"><br/>-->
+<!--                          <input type="submit" value="Download">-->
+<!--                        </form>-->
                         <!-- <a href="#" class="btn btn-primary">Analyze locations</a><br>
-                        <a href="#" class="btn btn-primary" onclick="savetoCSV()">Save locations</a> -->
+                        <a href="#" class="btn btn-primary" onclick="savetoCSV()">Save Configuration</a> -->
                     </div>
                 </div>
             </div>
@@ -118,80 +248,95 @@
     <script>
         //import { writeArrayBuffer } from 'geotiff';
         //idea http://devmag.org.za/2009/05/03/poisson-disk-sampling/
+
+
+        var file = 'undefined';
+        var geojsonfile = 'undefined'
+        var results = 'undefined';
+        function createConfigFile(){
+            return 1;
+        }
+
+
+
+
+
+        function addNewMarker(previosuState){
+            console.log(previosuState[0], previosuState[1])
+            var geojsonFeature = {
+                "type": "Feature",
+                    "properties": {},
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [previosuState[0], previosuState[1]]
+                }
+            }
+
+            var marker;
+
+            L.geoJson(geojsonFeature, {
+
+                pointToLayer: function(feature, latlng){
+
+                    marker = L.marker(previosuState, {
+
+                        title: "Resource Location",
+                        alt: "Resource Location",
+                        riseOnHover: true,
+                        draggable: true
+
+                    }).bindPopup("<input type='button' value='New location, Click to delete this marker' class='marker-delete-button'/>");
+
+                    marker.on("popupopen", onPopupOpen);
+                    marker.on('dragstart', function (e) {
+                        previousStates = []
+                        previousStates.push(marker.getLatLng())
+                    });
+                     marker.on('dragend', function (e) {
+                         previousAction = "Move"
+                         previousStates.push(marker)
+                     });
+
+                    return marker;
+                }
+            }).addTo(mymap);
+        }
+
         function addTOSpace(lines){
-            var mk = new L.FeatureGroup();
-            mymap.addLayer(mk);
-                    for (i=0; i<lines.length; i++){
-                        //console.log(lines[i]);    //comment this out to see every entry of the csv file
-                        var geojsonFeature = {
-                            "type": "Feature",
-                                "properties": {},
-                                "geometry": {
-                                    "type": "Point",
-                                    "coordinates": [lines[i][0], lines[i][1]]
-                            }
-                        }
-                        all_markers.push(L.marker([lines[i][0],lines[i][1]]));
+            //add markers
+            let i;
+            for (i=0; i<lines.length; i++){
+                addNewMarker(lines[i])
+           }
 
-                        //Automatically Grow and Shrink the bound
-                        var individualMarker = L.marker([lines[i][0],lines[i][1]]).addTo(mk);
-                        mymap.fitBounds(mk.getBounds());
+           //get bounds and move to bounds
+           mymap.fitBounds(lines)
 
-                        var marker;
-                        var total_detections = 1;
-
-
-                            L.geoJson(geojsonFeature, {
-
-                            pointToLayer: function(feature, latlng){
-
-                                marker = L.marker([lines[i][0],lines[i][1]], {
-
-                                    title: "Resource Location",
-                                    alt: "Resource Location",
-                                    riseOnHover: true,
-                                    draggable: true,
-                                    icon: greenIcon,
-
-                                }).bindPopup("<input type='button' value='Detections: " + total_detections + ", Click to delete this marker' class='marker-delete-button'/>");
-
-                                marker.on("popupopen", onPopupOpen);
-                                marker.on('dragstart', function (e) {
-                                    previousStates = []
-                                    previousStates.push(marker.getLatLng())
-                                });
-                                 marker.on('dragend', function (e) {
-                                     window.alert("dragged")
-                                     previousAction = "Move"
-                                     previousStates.push(marker)
-                                 });
-                                // .bindPopup("<input type='button' value=" + total_detections + "Delete this marker class='marker-delete-button'/>");
-                                return marker;
-                            }
-                            }).addTo(mymap);
-
-
-                    }
         }
 
         function makeArr(topLeftLat, TopLeftLong, startValue, stopValue, cardinality) {
             //assuming the top left is 0,0
-          var arr = [];
-          let X = topLeftLat
+            var arr = [];
+            let X = topLeftLat
             let Y = TopLeftLong
             let perRow = Math.pow(cardinality, .5)
-            window.alert(perRow)
 
             var Xstep = startValue/perRow
             var Ystep = stopValue/perRow
+            console.log("steps ", Xstep, " ", Ystep);
 
           for (var i = 0; i < perRow; i++) {
               for (var j = 0; j < perRow; j++) {
                   arr.push([X, Y]);
                   X = X + Xstep
+                  //X = Math.round(X * 100000) / 100000
+                  //console.log(X)
+
+
               }
               X = topLeftLat
               Y = Y + Ystep
+              //Y = parseFloat(Y).toFixed(5)
           }
 
           return arr;
@@ -199,22 +344,30 @@
 
         function addMarkers(){
             //for the cameras number
+            let CamerasNumber;
             CamerasNumber = document.getElementById("numberOfCameras").value;
+
+            if(typeof geojsonPolygon !== 'undefined' ){
+                addMarkersToPolygon(CamerasNumber);
+                return;
+            }
             //window.alert(CamerasNumber)
             if (Number.isInteger(+CamerasNumber) == false){
-                window.alert("Number of cameras must be an integer")
+                //window.alert("Number of cameras must be an integer")
                 return
             }
             else if (CamerasNumber < 0 || CamerasNumber > 1000){
-                window.alert("Number of cameras must be greater than 0 and less than 1000")
+                //window.alert("Number of cameras must be greater than 0 and less than 1000")
                 return
             }
+            //addMarkersToPolygon(CamerasNumber);
 
             //for the TopLeft
-            TopLeftLat = document.getElementById("topLeftLat").value;
+
+            let TopLeftLat = document.getElementById("topLeftLat").value;
 
             //longitude
-            TopLeftLong = document.getElementById("topLeftLong").value;
+            let TopLeftLong = document.getElementById("topLeftLong").value;
 
             if (isNaN(TopLeftLong) == true){
                 window.alert("This was not a number")
@@ -241,7 +394,7 @@
 
             //for the ButtonRight
             //longitude
-            bottomRightLong = document.getElementById("bottomRightLong").value;
+            let bottomRightLong = document.getElementById("bottomRightLong").value;
 
             if (isNaN(bottomRightLong) == true){
                 window.alert("This was not a number")
@@ -253,7 +406,7 @@
             }
 
             //latatude
-            bottomRightLat = document.getElementById("bottomRightLat").value;
+            let bottomRightLat = document.getElementById("bottomRightLat").value;
 
             if (isNaN(bottomRightLat) == true){
                 window.alert("This was not a number")
@@ -266,11 +419,12 @@
 
 
             //numbers are valad now put the things in the right place
-            Xdistance = bottomRightLat - TopLeftLat
-            Ydistance = bottomRightLong - TopLeftLong
+            let Xdistance = bottomRightLat - TopLeftLat
+            let Ydistance = bottomRightLong - TopLeftLong
+            console.log("disances ",Xdistance,  Ydistance)
 
 
-            y1 = makeArr(parseInt(TopLeftLat), parseInt(TopLeftLong), Xdistance, Ydistance, CamerasNumber)
+            let y1 = makeArr(parseFloat(TopLeftLat), parseFloat(TopLeftLong), Xdistance, Ydistance, CamerasNumber)
             console.log(y1)
 
             //have an array of points now need to put them into places
@@ -293,6 +447,7 @@
                 return
             }
             if (previousAction == "Delete"){
+                console.log("change made")
                 var geojsonFeature = {
                 "type": "Feature",
                     "properties": {},
@@ -313,8 +468,7 @@
                         title: "Resource Location",
                         alt: "Resource Location",
                         riseOnHover: true,
-                        draggable: true,
-                        icon: greenIcon,
+                        draggable: true
 
                     }).bindPopup("<input type='button' value='New location, Click to delete this marker' class='marker-delete-button'/>");
 
@@ -361,8 +515,7 @@
                         title: "Resource Location",
                         alt: "Resource Location",
                         riseOnHover: true,
-                        draggable: true,
-                        icon: greenIcon,
+                        draggable: true
 
                     }).bindPopup("<input type='button' value='New location, Click to delete this marker' class='marker-delete-button'/>");
 
@@ -446,8 +599,6 @@
             console.log(fileList);
             console.log(fileList[0].name);
             console.log(fileList[0].type);
-            var mk = new L.FeatureGroup();
-            mymap.addLayer(mk);
             for(var f=0; f < fileList.length; f++) {
                 let reader = new FileReader();
                 reader.readAsText(fileList[f]);
@@ -463,152 +614,26 @@
                         for(var j=0; j < data.length; j++) {
                             tarr.push(data[j]);
                         }
-                        lines.push(tarr);
+                        console.log(tarr)
+                        data = [tarr[0], tarr[1], tarr[2]]
+                        lines.push(data);
                     }
-                    //console.log(lines);
-                    //console.log(lines[1][0]);
-                    //console.log(lines[1][1]);
+                    console.log("In read csv")
+                    console.log(lines);
+                    console.log(lines[1][0]);
+                    console.log(lines[1][1]);
+                    let latlongbounds = []
                     for (i=1; i<lines.length - 1; i++){
-                        //console.log(lines[i]);    //comment this out to see every entry of the csv file
-                        var geojsonFeature = {
-                            "type": "Feature",
-                                "properties": {},
-                                "geometry": {
-                                    "type": "Point",
-                                    "coordinates": [lines[i][2], lines[i][1]]
-                            }
-                        }
-                        all_markers.push(L.marker([lines[i][2],lines[i][1]]));
-
-                        //Automatically Grow and Shrink the bound
-                        var individualMarker = L.marker([lines[i][2],lines[i][1]]).addTo(mk);
-                        mymap.fitBounds(mk.getBounds());
-
-                        var marker;
-                        var id = lines[i][0];
-                        var total_detections = 0;
-                        if(lines[i].length > 3) {
-                            total_detections = lines[i][3];
-                        } else {
-                            total_detections = 200;
-                        }
-                        if (total_detections < 1) {
-                            L.geoJson(geojsonFeature, {
-
-                            pointToLayer: function(feature, latlng){
-
-                                marker = L.marker([lines[i][2],lines[i][1]], {
-
-                                    title: "Resource Location",
-                                    alt: "Resource Location",
-                                    riseOnHover: true,
-                                    draggable: true,
-                                    icon: redIcon,
-
-                                }).bindPopup("<input type='button' value='Detections: " + total_detections + ", Click to delete this marker' class='marker-delete-button'/>");
-                                marker.on("popupopen", onPopupOpen);
-                                marker.on('dragstart', function (e) {
-                                    previousStates = []
-                                    previousStates.push(marker.getLatLng())
-                                });
-                                 marker.on('dragend', function (e) {
-                                     previousAction = "Move"
-                                     previousStates.push(marker)
-                                 });
-                                // .bindPopup("<input type='button' value=" + total_detections + "Delete this marker class='marker-delete-button'/>");
-                                return marker;
-                            }
-                            }).addTo(mymap);
-
-                        } else if (total_detections < 10) {
-                            L.geoJson(geojsonFeature, {
-
-                            pointToLayer: function(feature, latlng){
-
-                                marker = L.marker([lines[i][2],lines[i][1]], {
-
-                                    title: "Resource Location",
-                                    alt: "Resource Location",
-                                    riseOnHover: true,
-                                    draggable: true,
-
-                                }).bindPopup("<input type='button' value='Detections: " + total_detections + ", Click to delete this marker' class='marker-delete-button'/>");
-
-                                marker.on("popupopen", onPopupOpen);
-                                marker.on('dragstart', function (e) {
-                                    previousStates = []
-                                    previousStates.push(marker.getLatLng())
-                                });
-                                 marker.on('dragend', function (e) {
-                                     previousAction = "Move"
-                                     previousStates.push(marker)
-                                 });
-                                // .bindPopup("<input type='button' value=" + total_detections + "Delete this marker class='marker-delete-button'/>");
-                                return marker;
-                            }
-                            }).addTo(mymap);
-
-                        } else if (total_detections < 200) {
-                            L.geoJson(geojsonFeature, {
-
-                            pointToLayer: function(feature, latlng){
-
-                                marker = L.marker([lines[i][2],lines[i][1]], {
-
-                                    title: "Resource Location",
-                                    alt: "Resource Location",
-                                    riseOnHover: true,
-                                    draggable: true,
-                                    icon: greenIcon,
-
-                                }).bindPopup("<input type='button' value='Detections: " + total_detections + ", Click to delete this marker' class='marker-delete-button'/>");
-                                marker.on("popupopen", onPopupOpen);
-                                marker.on('dragstart', function (e) {
-                                    previousStates = []
-                                    previousStates.push(marker.getLatLng())
-                                });
-                                 marker.on('dragend', function (e) {
-                                     previousAction = "Move"
-                                     previousStates.push(marker)
-                                 });
-                                // .bindPopup("<input type='button' value=" + total_detections + "Delete this marker class='marker-delete-button'/>");
-                                return marker;
-                            }
-                            }).addTo(mymap);
-
-                        } else {
-                            L.geoJson(geojsonFeature, {
-
-                            pointToLayer: function(feature, latlng){
-
-                                marker = L.marker([lines[i][2],lines[i][1]], {
-
-                                    title: "Resource Location",
-                                    alt: "Resource Location",
-                                    riseOnHover: true,
-                                    draggable: true,
-                                    icon: greyIcon,
-
-                                }).bindPopup("<input type='button' value='Detections: " + total_detections + ", Click to delete this marker' class='marker-delete-button'/>");
-                                marker.on("popupopen", onPopupOpen);
-                                marker.on('dragstart', function (e) {
-                                    previousStates = []
-                                    previousStates.push(marker.getLatLng())
-                                });
-                                 marker.on('dragend', function (e) {
-                                     previousAction = "Move"
-                                     previousStates.push(marker)
-                                 });
-                                // .bindPopup("<input type='button' value=" + total_detections + "Delete this marker class='marker-delete-button'/>");
-                                return marker;
-                            }
-                            }).addTo(mymap);
-                        }
+                        let temp = lines[i][0]
+                        lines[i][0] = lines[i][1]
+                        lines[i][1] = lines[i][2]
+                        console.log(lines[i][0] , " ", lines[i][1], " ", lines[i][2] )
+                        latlongbounds.push([lines[i][0], lines[i][1]])
+                        addNewMarker(lines[i])
                     }
+                    mymap.fitBounds(latlongbounds);
                 }
             }
-
-            //fitMarkers();
 
         });
 
@@ -616,12 +641,15 @@
             this.x = x;
             this.y = y;
         }
-        
+
+
+
+
         function getColor(d) {
-            return d == 4 ? '#800026' :
-                 d == 3 ? '#E31A1C' :
-                d == 2 ? '#FD8D3C' :
-                d == 1 ? '#FED976' : '#FFEDA000';
+            return d == 4 ? 'rgba(190,0,255,1)' :
+                 d == 3 ? 'rgba(190,0,255,0.75)' :
+                d == 2 ? 'rgba(190,0,255,0.50)' :
+                d == 1 ? 'rgba(190,0,255,0.25)' : 'rgba(190,0,255,0)';
         }
 
         var mymap = L.map('mapid', {drawControl: true}).setView([-2, 113], 1);
@@ -635,11 +663,11 @@
                 'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
                id: 'mapbox/streets-v11'
         }).addTo(mymap);
-        
+
         // Try 3: https://leaflet.github.io/Leaflet.draw/docs/examples/full.html
         // Try 2: https://leaflet.github.io/Leaflet.draw/docs/leaflet-draw-latest.html
         // Try 1: Initialise the FeatureGroup to store editable layers https://jsfiddle.net/user2314737/324h2d9q
-        
+
         // Initialise the draw control and pass it the FeatureGroup of editable layers
         // var drawControl = new L.Control.Draw(drawPluginOptions);
         // mymap.addControl(drawControl);
@@ -734,18 +762,114 @@
 
         });
         });
-        
-        
-//Important: Here processes the geoTiff data
-        document.getElementById("geotiff-file").addEventListener("change", function(event) {
-                var file = event.target.files[0];
+
+        //jacks start
+        function isMarkerInsidePolygon(marker, poly) {
+            var polyPoints = poly.getLatLngs()[0];
+            var x = marker.getLatLng().lat, y = marker.getLatLng().lng;
+            var inside = false;
+            for (var i = 0, j = polyPoints.length - 1; i < polyPoints.length; j = i++) {
+                var xi = polyPoints[i].lat, yi = polyPoints[i].lng;
+                var xj = polyPoints[j].lat, yj = polyPoints[j].lng;
+                var intersect = ((yi > y) != (yj > y))
+                    && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+                if (intersect) inside = !inside;
+            }
+            return inside;
+        };
+
+        var geojsonPolygon;
+        function addMarkersToPolygon(number){
+            const markersDelete = getAllMarkersOnMap();
+            markersDelete.forEach(element => mymap.removeLayer(element));
+            // Todo: remove markers delete
+            mymap.fitBounds(geojsonPolygon.getBounds());
+            var sw = geojsonPolygon.getBounds().getSouthWest();   //lower left
+            var ne = geojsonPolygon.getBounds().getNorthEast();   //upper right
+            var latDivisionFactor = Math.sqrt(number);
+            var longDivisionFactor = Math.sqrt(number);
+
+            var latInc = (ne.lat - sw.lat) / latDivisionFactor;
+            var longInc = (ne.lat - sw.lat) / longDivisionFactor;
+            var markersPool = [];
+            var alter = 0;
+            let len = 0;
+            do {    //algorithm to find proper spacing for markers
+                markersPool = [];
+                alter++;
+                alter%2 == 0 ? latDivisionFactor++ : longDivisionFactor++;
+                latInc = (ne.lat - sw.lat) / latDivisionFactor;
+                longInc = (ne.lat - sw.lat) / longDivisionFactor;
+                for (var i = 0; i < latDivisionFactor; i++) {
+                    for (var j = 0; j < longDivisionFactor; j++){
+                        var lat = i * latInc + sw.lat;
+                        var long = j * longInc + sw.lng;
+                        var p = new L.latLng(lat, long);
+                        var mark = new L.marker(p);
+                        if (isMarkerInsidePolygon(mark, geojsonPolygon)){
+                            len+=1;
+                            addNewMarker([lat, long]);
+                        }
+                    }
+                }
+            } while (len < number);
+        }
+
+
+
+        //1. change the label to “Load boundaries (Geojson)” -> go for “numbers of camera” input show annotations on the boundaries -> evenly space annotations
+        //2. given geotiff two coordinates, display the polygon, and output the geojson polygon file.
+        //3. can still load the GIS without the camera number
+        //4. push to the git hub
+        //5. when loading the geotiff data and create the boundaries -> populate top left top right ...
+        //6. When GEOjson already uploaded -> ignore the automatic rectangle boundary, if not treat the automatic rectangle boundary as the normal boundry, which can add markers
+        document.getElementById("GISPolygon").addEventListener("change", function(event) {
+                //alert("got here at least");
+                //var CamerasNumber = parseInt(document.getElementById("numberOfCameras").value);
+                var CamerasNumber = 10;
+                geojsonfile = event.target.files[0];
+                console.log("GeoJsonFile:", geojsonfile);
+                let fileReader = new FileReader();
+                fileReader.readAsText(geojsonfile);
+                fileReader.onload = function() {
+                    var jsonString = fileReader.result;
+                    var myObj = JSON.parse(jsonString);
+                    var gjLayer = L.geoJson(myObj);    //geoJsonLayer
+                    var coordinates = myObj["geometry"]["coordinates"];
+                    geojsonPolygon = L.polygon(coordinates, {color: 'blue'});    //assign the global var
+                    geojsonPolygon.addTo(mymap);
+                    mymap.fitBounds(geojsonPolygon.getBounds());
+                };
+                fileReader.onerror = function() {
+                  alert(fileReader.error);
+                };
+            });
+            //jacks end
+
+        var layer;
+        var rectangle;
+
+        var upperleft = "";
+        var upperright = "";
+        var lowerleft = "";
+        var lowerright = "";
+        //Important: Here processes the geoTiff data
+
+        function addLayer() {
+                console.log("current layer ", layer);
+                //if layer exists, remove layer
+                if(typeof layer !== 'undefined'){
+                    console.log('removed layer')
+                    mymap.removeLayer(layer);
+                }
+
                 console.log("file:", file);
 
                 var reader = new FileReader();
                 reader.readAsArrayBuffer(file);
                 reader.onloadend = function () {
                      var arrayBuffer = reader.result;
-                     console.log(arrayBuffer);
+                     console.log("arrau ubffer ", arrayBuffer);
                      parseGeoraster(arrayBuffer).then(georaster => {
 
                          console.log("georaster:", georaster);
@@ -756,7 +880,7 @@
                              Just make sure to include the georaster option!
                              http://leafletjs.com/reference-1.2.0.html#gridlayer
                          */
-                         var layer = new GeoRasterLayer({
+                         layer = new GeoRasterLayer({
                              georaster: georaster,
                              opacity:1,
                              // opacity: values => values == 0? 0 : 0,
@@ -769,10 +893,95 @@
 
                          mymap.fitBounds(layer.getBounds());
                          console.log("geotiffbound:", layer.getBounds());
-                         document.getElementById("overlay").style.display = "none";
+                         upperleft = layer.getBounds()['_northEast']['lat']
+                         upperright = layer.getBounds()['_northEast']['lng']
+                         lowerleft = layer.getBounds()['_southWest']['lat']
+                         lowerright= layer.getBounds()['_southWest']['lng']
+                         document.getElementById("topLeftLong").defaultValue = upperright;
+                         document.getElementById("topLeftLat").defaultValue = lowerleft;
+                         document.getElementById("bottomRightLong").defaultValue = lowerright;
+                         document.getElementById("bottomRightLat").defaultValue = upperleft;
+
+                         var bounds = layer.getBounds();
+                         var coordinates = [];
+                         coordinates.push(bounds.getSouthWest());
+                         coordinates.push(bounds.getSouthEast());
+                         coordinates.push(bounds.getNorthEast());
+                         coordinates.push(bounds.getNorthWest());
+                         rectangle = L.polygon(coordinates, {color: 'red'});
+                         rectangle.addTo(mymap);
+
                      });
+
+
                  };
+
+        }
+
+
+        var hasGeotiffFile = false;
+       //Important: Here processes the geoTiff data
+        document.getElementById("geotiff-file").addEventListener("change", function(event) {
+            console.log("added a geotiff file")
+            file = event.target.files[0];
+            document.getElementById("renderCheckbox").checked = true;
+            addLayer();
+            hasGeotiffFile = true;
+            //need to write to the new file
+            const fileReader = new FileReader();
+            fileReader.readAsArrayBuffer(file);
+            console.log("TRying to write to file")
+
+            fileReader.addEventListener('load', async () => {
+                console.log("IN there one")
+                const arrayBuffer = fileReader.result;
+                const tifFileContent = new Blob([arrayBuffer], {type: 'image/tiff'});
+                console.log("This is the file conent" + arrayBuffer)
+                const file = new File([tifFileContent], '/Users/nicolerussack/PycharmProjects/CameraTrapWebpge/cameratrapswebpage/rasterfile.tif', { type: 'image/tiff' });
+
+                // const reader = new FileReader();
+                // reader.readAsArrayBuffer(tifFileContent);
+                // reader.onloadend = () => {
+                //     console.log("IN there two")
+                //   // Write the ArrayBuffer to a file using the fs module
+                //   fs.writeFile('rasterfile.tif', Buffer.from(reader.result), (err) => {
+                //     if (err) {
+                //       console.error(err);
+                //       console.log("There was an error")
+                //     } else {
+                //       console.log('TIF image saved to image.tif');
+                //     }
+                //   });
+                // };
             });
+
+
+            });
+
+        document.getElementById("renderCheckbox").addEventListener("change", function(event) {
+            console.log("Render changed");
+
+                if(document.getElementById('renderCheckbox').checked){
+                    console.log("on");
+                    addLayer();
+                    document.getElementById("topLeftLong").defaultValue = lowerleft;
+                    document.getElementById("topLeftLat").defaultValue = upperright;
+                    document.getElementById("bottomRightLong").defaultValue = upperleft;
+                    document.getElementById("bottomRightLat").defaultValue = lowerright;
+                }
+                else{
+                    console.log("off");
+                    console.log(layer);
+                    mymap.removeLayer(layer);
+                    mymap.removeLayer(rectangle);
+
+                    layer = 'undefined'
+                    document.getElementById("topLeftLong").defaultValue = "";
+                    document.getElementById("topLeftLat").defaultValue = "";
+                    document.getElementById("bottomRightLong").defaultValue = "";
+                    document.getElementById("bottomRightLat").defaultValue = "";
+                }
+        });
 
 // initialize the map on the "map" div with a given center and zoom
 
@@ -805,8 +1014,6 @@
             L.geoJson(geojsonFeature, {
 
                 pointToLayer: function(feature, latlng){
-
-
 
                     marker = L.marker(e.latlng, {
 
@@ -864,6 +1071,7 @@
         function getAllMarkersOnMap(){
             var allMarkersList = [];//new Array();
                 mymap.eachLayer(function(layer) {
+                    console.log("new layer")
                     if(layer instanceof L.Marker) {
                         allMarkersList.push(layer._latlng);
                     }
@@ -871,25 +1079,278 @@
                 return allMarkersList
             }
             // Test the function with the test marker
-            var all_markers_on_map_test = getAllMarkersOnMap()
-            console.log(all_markers_on_map_test)
+            var SavConfigFile = function() {
+                console.log("in saving config file");
+                //read from camera traps
+                var currentConfigFile = {"landscape_raster_file":"/Users/nicolerussack/PycharmProjects/CameraTrapWebpge/cameratrapswebpage/rasterfile.tifTrapWebpageBackend/scrpy/data/simulation/raster/Amazon.tiff",
+                        "cameraTrapFile":"/Users/nicolerussack/PycharmProjects/CameraTrapWebpge/cameratrapswebpage/markers.csv",
+                        "trap_config":"file",
+                        "N":"100",
+                        "n_ac_realizations":"10",
+                        "activity_centers_seed":"1357",
+                        "capture_histories_seed":"1111",
+                        "ALPHA0":"0.05",
+                        "ALPHA1":"0.15",
+                        "ALPHA2":"0.0001",
+                        "raster_cell_size":"0.25",
+                        "caphist_realization_no":"10",
+                        "ac_realizations":"10",
+                        "K":"10"};
+                var Testing = {5:6};
+                //update values
+                currentConfigFile["K"] = "This worked!!";
+                console.log(currentConfigFile)
+
+                 $.ajax({
+                        dataType: "json",
+                        url: urlPrefix+"writeConfigFile",
+                        type: "POST",
+                        contentType: "application/json",
+                        data: JSON.stringify(Testing),
+                        success: async function (data) {
+                            console.log("saved to configFile");
+                        },
+                    error: function(xhr, status, error) {
+                      console.log("in the config file error block xhr:" + xhr + "status: " + status +  " error:" + error);
+                    }
+                 });
+
+                //put new data in
+
+                //write json to the file
+
+
+            }
+
 
             // Function to save all markers on map to CSV file
             var savetoCSV = function() {
                 var all_markers_on_map_current = getAllMarkersOnMap()
-                alert("total markers on map: "+ all_markers_on_map_current.length)
-                console.log(all_markers_on_map_current[0])
-                console.log(JSON.stringify(all_markers_on_map_current))
+                //get the save value
+                //var zipName = document.getElementById("saveValue").value;
+                var zipName = "name";
+                // window.alert(zipName)
+                // // console.log(zipName);
+                // if(zipName == ""){
+                //     window.alert("please enter a name to save as")
+                //     return;
+                // }
+                // if(zipName == "save as"){
+                //     window.alert("please change the name to save as ")
+                //     return;
+                // }
+                // for (var i = 0; i < zipName.length; i++) {
+                //     if(zipName[i] == " "){
+                //         window.alert("Your name cannot have spaces")
+                //         return;
+                //     }
+                // }
+                // window.alert("saved")
+                // return;
+
+
+                //make sure there are no spaces
+
+                var all_markers_on_map_current = getAllMarkersOnMap()
+                // alert("total markers on map: "+ all_markers_on_map_current.length)
+                // console.log(all_markers_on_map_current[0])
+                // console.log(JSON.stringify(all_markers_on_map_current))
                 $.ajax({
+                    dataType: "json",
                     url: urlPrefix+"savetoCSV",
                     type: "POST",
                     contentType: "application/json",
                     data: JSON.stringify(all_markers_on_map_current),
+                    success: async function (data) {
+                        console.log("saved to csv");
+                        console.log(data);
+                        const zip = new JSZip();
+
+                        zip.file("results.txt", "the average is 7 \n standard devation of 3 \n and the samples were 4, 5, 37, 2, 9, 10");
+
+                        const fileReader = new FileReader();
+                        const csvfileReader = new FileReader();
+                        var rows = [];
+                        if(data.length != 0){
+                            var header = [];
+                            for(const [key, value] of Object.entries(data[0])) {
+                                header.push(key)
+                            }
+                            rows.push(header)
+                            for(let i = 0; i < data.length; i++){
+                                var newrow = []
+                                newrow.push(i);
+                                for(const [key, value] of Object.entries(data[i])){
+                                    newrow.push(value)
+                                }
+                                rows.push(newrow)
+
+                            }
+                        }
+                        let csvContent = "data:text/csv;charset=utf-8,";
+
+                        rows.forEach(function(rowArray) {
+                            let row = rowArray.join(",");
+                            csvContent += row + "\r\n";
+                        });
+                        const csvfile = new File([csvContent], '/Users/nicolerussack/PycharmProjects/CameraTrapWebpge/cameratrapswebpage/markers.csv', { type: "text/csv" });
+                        csvfileReader.readAsArrayBuffer(csvfile);
+                        csvfileReader.addEventListener('load', async () => {
+                            const csvarrayBuffer = csvfileReader.result;
+                            const csvblob = new Blob([csvarrayBuffer], {type: 'text/csv'});
+                            zip.file("markers.csv", csvblob);
+                            console.log("This is the file  " + file)
+                            if (file !== 'undefined') {
+                                fileReader.readAsArrayBuffer(file);
+                                fileReader.addEventListener('load', async () => {
+                                    const arrayBuffer = fileReader.result;
+                                    const tifFileContent = new Blob([arrayBuffer], {type: 'image/tiff'});
+                                    zip.file("georaster.tif", tifFileContent);
+
+                                    const zipFile = await zip.generateAsync({type: "blob"});
+                                    const link = document.createElement("a");
+                                    link.href = URL.createObjectURL(zipFile);
+                                    link.download = "files.zip";
+                                    link.click();
+                                });
+
+                            } else {
+                                const zipFile = await zip.generateAsync({type: "blob"});
+                                const link = document.createElement("a");
+                                link.href = URL.createObjectURL(zipFile);
+                                link.download = "files.zip";
+                                link.click();
+
+                            }
+
+
+                        });
+
+
+
+
+
+                        // zip.file("georaster.tif", fileUrl);
+                        //zip all files together
+
+
+
+                    },
+                    error: function(xhr, status, error) {
+                      console.log("in the error block xhr:" + xhr + "status: " + status +  " error:" + error);
+
+                    }
+                });
+
+
+
+
+            }
+
+
+            function checkForBounds (){
+                //find geotiff bounds
+                let numOutOfBounts = 0
+                let x = 0
+                let y = 0
+                var all_markers_on_map_test = getAllMarkersOnMap()
+                for(let i = 0; i <  all_markers_on_map_test.length; i++){
+                    x = JSON.stringify(all_markers_on_map_test[i]["lat"])
+                    y = JSON.stringify(all_markers_on_map_test[i]["lng"])
+                    console.log("point ", x, " ", y )
+                    console.log(upperleft, " ", lowerleft, " ", upperright, " ", lowerright)
+                    if(x > upperleft || x < lowerleft || y > upperright || y < lowerright){
+                        numOutOfBounts += 1;
+                        console.log("out of bounds")
+                    }
+                }
+
+                console.log(numOutOfBounts)
+                return numOutOfBounts
+
+            }
+            var analyzeLocations = function() {
+                let pointsOutsideBounds = checkForBounds()
+                if(pointsOutsideBounds > 0 ){
+
+                    window.alert("You have " + pointsOutsideBounds +  " points outside the geotiff bounds")
+                    return
+                }
+                document.getElementById("analuzebutton").style.backgroundColor = "blue";
+
+                //Create the config file
+                //have a static json and change the values and then edit them as we go??
+
+                //check for input number of animals
+                let simulateAnimals = parseInt(document.getElementById("numberOfAnimals").value);
+                console.log("This is simualte anmails " + simulateAnimals)
+                if(!Number.isInteger(simulateAnimals)){
+                    window.alert("enter an integer for the Number of Animals")
+                    document.getElementById("analuzebutton").style.backgroundColor = "grey";
+                    return;
+                }
+                if(simulateAnimals<0){
+                    window.alert("Number of Animals must be positive")
+                    document.getElementById("analuzebutton").style.backgroundColor = "grey";
+                    return;
+                }
+
+                //convert marker locations to the file
+                var all_markers_on_map_current = getAllMarkersOnMap()
+                console.log("allm arkon ma p data ", all_markers_on_map_current)
+
+                $.ajax({
+                    dataType: "json",
+                    url: urlPrefix+"savetoCSV",
+                    type: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify(all_markers_on_map_current),
+                    success: async function (data) {
+
+                    },
+                    error: function(xhr, status, error) {
+                      console.log("in the error block xhr:" + xhr + "status: " + status +  " error:" + error);
+
+                    }
+                });
+
+
+                //need to get the geotiff file converted
+                if(!hasGeotiffFile) {
+                    window.alert("Please enter a geotiff file")
+                    document.getElementById("analuzebutton").style.backgroundColor = "grey";
+                    return;
+                }
+
+
+                //maybe alret error if any of these are not right and return, otherwise it can run!!
+                //need to change the config file
+                //read in the currect config file as a json
+                const JsonFileReader = new FileReader();
+
+                //edit the correct values
+                //need to change
+                //re write it to the config file
+                console.log("Saving config file")
+                SavConfigFile();
+
+                $.ajax({
+                    dataType: "text",
+                    url: urlPrefix+"analyzeLocations",
+                    type: "POST",
+                    contentType: "application/json",
+                    data: "hello",
                     success: function(data) {
-                        console.log("done");
+                        console.log("finished analysing locations");
+                        console.log(data);
+                        document.getElementById("analuzebutton").style.backgroundColor = "grey";
+                        window.alert(data);
+                        results = data;
                     },
                     error: notifyFail
                 });
+
+
             }
 
 
@@ -900,7 +1361,7 @@ function getAllMarkers() {
 
 $(".get-markers").on("click", getAllMarkers);
 
-      var urlPrefix = "http://localhost:8081/"
+      var urlPrefix = "http://0.0.0.0:8081/"
 
        // Print failure response for failed JQuery requests
        var notifyFail = function(jqXHR, textStatus, errorThrown){
@@ -918,7 +1379,7 @@ $(".get-markers").on("click", getAllMarkers);
                 data: JSON.stringify({}),
                 success: function(data){
                   console.log(data['locations'].length);
-                    for (i=1; i<data['locations'].length; i++){
+                    for (let i=1; i<data['locations'].length; i++){
                         console.log(data['locations'][i]);
                         var geojsonFeature = {
         "type": "Feature",
@@ -967,7 +1428,7 @@ $(".get-markers").on("click", getAllMarkers);
     function onClick(e) {
       alert(e.latlng);
     }
-    
+
     //tiff to geotiff conversion: https://github.com/geotiffjs/geotiff.js/
     /* DO NOT DELETE!
     function readBackendTiff() {
@@ -1003,10 +1464,9 @@ $(".get-markers").on("click", getAllMarkers);
             });
         }
     }*/
-    
+
     </script>
 
 
 </body>
 </html>
-
