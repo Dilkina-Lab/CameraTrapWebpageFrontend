@@ -143,49 +143,49 @@ input:checked + .slider:before {
             <div class="col-lg-3">
                 <div class="card" style="width: 50rem;">
                     <div class="card-body">
+
+                        <h4>Load Markers From A previous project </h4>
+                        <input type="file" class="menu" id="file-selector" multiple/>
+
                         <h4>Menu</h4>
-                        <div style = "height: 30px;  display: flex; width: 300px;">
-                            <input style = "float: left;" type="button" value="Undo" onclick="unDo()" >
-                            <br>
-                            <input style = "float: right; width: 140px;" type="button" class="menu" value="Save Configuration" onclick="savetoCSV()"><br/>
-                              <input type="text" id="SaveValue" value = "save As"><br><br>
-                        </div>
+                        <div style = "height: 110px;   width: 350px;">
+                            <div style = "width: 300px; ">
+                                <input  type="button" value="Undo" onclick="unDo()" >
+                                <input  type="button" class="menu" value="Focus" onclick="FocusOnGeotiff()">
+                            </div>
+
+                            <div style = "width: 300px; ">
+                                <input  type="button" class="menu" value="Save Configuration" onclick="savetoCSV()">
+                                <input style = "width: 150px;" type="text"  id="saveValue" value = "save As">
+                            </div>
 
 
 
-
-                        <p class="card-text">
-                        </p>
-
-
-                        <div id="menu">
-                        <h4>Type of Map</h4>
-                        <input id="satellite-v9" type="radio" name="rtoggle" value="satellite" checked="checked">
-                        <!-- See a list of Mapbox-hosted public styles at -->
-                        <!-- See a list of Mapbox-hosted public styles at -->
-                        <!-- https://docs.mapbox.com/api/maps/styles/#mapbox-styles -->
-                        <label for="satellite-v9">satellite</label>
-                        <input id="light-v10" type="radio" name="rtoggle" value="light">
-                        <label for="light-v10">light</label>
-                        <input id="dark-v10" type="radio" name="rtoggle" value="dark">
-                        <label for="dark-v10">dark</label>
-                        <input id="streets-v11" type="radio" name="rtoggle" value="streets">
-                        <label for="streets-v11">streets</label>
-                        <input id="outdoors-v11" type="radio" name="rtoggle" value="outdoors">
-                        <label for="outdoors-v11">outdoors</label>
+                            <div id="menu">
+                            <h5>Type of Map</h5>
+                            <input id="satellite-v9" type="radio" name="rtoggle" value="satellite" checked="checked">
+                            <!-- See a list of Mapbox-hosted public styles at -->
+                            <!-- See a list of Mapbox-hosted public styles at -->
+                            <!-- https://docs.mapbox.com/api/maps/styles/#mapbox-styles -->
+                            <label for="satellite-v9">satellite</label>
+                            <input id="light-v10" type="radio" name="rtoggle" value="light">
+                            <label for="light-v10">light</label>
+                            <input id="dark-v10" type="radio" name="rtoggle" value="dark">
+                            <label for="dark-v10">dark</label>
+                            <input id="streets-v11" type="radio" name="rtoggle" value="streets">
+                            <label for="streets-v11">streets</label>
+                            <input id="outdoors-v11" type="radio" name="rtoggle" value="outdoors">
+                            <label for="outdoors-v11">outdoors</label>
+                            </div>
                         </div>
 
                         <!-- <a href="#" class="btn btn-primary" onclick="getCSV()">Load locations</a><br> -->
 
-                        <h4>Load From A previous project </h4>
-                        <input type="file" class="menu" id="file-selector" multiple/>
+
                         <h4>Boundary</h4>
-                        <h5>GIS Boundary</h5>
+                        <h5>GIS or GeoTIFF Boundary</h5>
                         <input type="file" id="GISPolygon">
-
-
-                         <h5> Or Manually Create boundary </h5>
-
+                        <h5> Or Manually Create boundary </h5>
                         <div style = "display: flex;">
                             <label style = "height: 40px; width: 200px">Top Left Longitude:</label>
                             <input style = "height: 30px; width: 50px" type="text" id = "topLeftLong" name="fname"><br>
@@ -203,17 +203,17 @@ input:checked + .slider:before {
                             <input style = "height: 30px; width: 50px" type="text" id = "bottomRightLat" name="fname"><br>
                         </div>
 
-                        <h5> Select number of cameras </h5>
-                         <div style = "display: flex;">
-                            <label style = "height: 20px; width: 200px">Number of Cameras:</label>
-                            <input style = "height: 30px; width: 50px" type="text" id = "numberOfCameras" name="fname"><br>
+                        <h4>Cameras</h4>
+                         <div>
+                            <label style = "height: 20px; width: 200px">Select number of cameras:</label>
+                            <input style = "height: 30px; width: 50px" type="text" id = "numberOfCameras" name="fname">
+                            <input type="button" value="Enter" onclick="addMarkers()" >
                         </div>
-                        <input type="button" value="Enter" onclick="addMarkers()" ><br>
 
 
                         <h4> Simulate </h4>
                         <div>
-                            <h3>Load a GeoTIFF Suitability File</h3>
+                            <h5>Load a GeoTIFF Suitability File</h5>
                             <input type="file" id="geotiff-file">
                             <div style = "display: flex;">
                                 <h5>Show GeoTIFF </h5>
@@ -221,8 +221,9 @@ input:checked + .slider:before {
                                       <input type="checkbox"  id="renderCheckbox">
                                       <span class="slider round"></span>
                                 </label>
-
                             </div>
+                            <h5>Load a Config File</h5>
+                            <input type="file" id="config-file">
 
 
 
@@ -312,6 +313,16 @@ input:checked + .slider:before {
            //get bounds and move to bounds
            mymap.fitBounds(lines)
 
+        }
+
+
+        function FocusOnGeotiff(){
+            //if geotiff exists
+            if(hasGeotiffFile){
+                mymap.fitBounds(layer.getBounds());
+            }
+
+            //go to it
         }
 
         function makeArr(topLeftLat, TopLeftLong, startValue, stopValue, cardinality) {
@@ -823,18 +834,57 @@ input:checked + .slider:before {
         //4. push to the git hub
         //5. when loading the geotiff data and create the boundaries -> populate top left top right ...
         //6. When GEOjson already uploaded -> ignore the automatic rectangle boundary, if not treat the automatic rectangle boundary as the normal boundry, which can add markers
+        var geojsonPolygon;
         document.getElementById("GISPolygon").addEventListener("change", function(event) {
-                //alert("got here at least");
-                //var CamerasNumber = parseInt(document.getElementById("numberOfCameras").value);
-                var CamerasNumber = 10;
-                geojsonfile = event.target.files[0];
-                console.log("GeoJsonFile:", geojsonfile);
+            //alert("got here at least");
+            //var CamerasNumber = parseInt(document.getElementById("numberOfCameras").value);
+            //If tif file
+            if(geojsonPolygon){
+                geojsonPolygon.remove();
+            }
+            geojsonfile = event.target.files[0];
+
+            console.log("GeoJsonFile:", geojsonfile["name"]);
+            const myArray = geojsonfile["name"].split(".");
+            if (myArray[1] == "tif") {
+                var reader = new FileReader();
+                reader.readAsArrayBuffer(geojsonfile);
+                reader.onloadend = function () {
+                    var arrayBuffer = reader.result;
+                    parseGeoraster(arrayBuffer).then(georaster => {
+                        var max_value = georaster.maxs[0];
+
+                        layer = new GeoRasterLayer({
+                            georaster: georaster,
+                            opacity: 1,
+                            // opacity: values => values == 0? 0 : 0,
+                            pixelValuesToColorFn: getColor,
+                            // pixelValuesToColorFn: values => `hsl(120,100%,${(1 - values[0] / max_value / 2) * 100}%)`,
+                            resolution: 256
+                        });
+
+                        var bounds = layer.getBounds();
+                        var coordinates = [];
+                        coordinates.push(bounds.getSouthWest());
+                        coordinates.push(bounds.getSouthEast());
+                        coordinates.push(bounds.getNorthEast());
+                        coordinates.push(bounds.getNorthWest());
+                        geojsonPolygon = L.polygon(coordinates, {color: 'blue'});    //assign the global var
+                        geojsonPolygon.addTo(mymap);
+                        mymap.fitBounds(geojsonPolygon.getBounds());
+                        return;
+
+                    });
+                }
+            } else if (myArray[1] == "geojson") {
                 let fileReader = new FileReader();
                 fileReader.readAsText(geojsonfile);
                 fileReader.onload = function() {
                     var jsonString = fileReader.result;
                     var myObj = JSON.parse(jsonString);
+                    console.log("json string " + myObj);
                     var gjLayer = L.geoJson(myObj);    //geoJsonLayer
+                    console.log(gjLayer);
                     var coordinates = myObj["geometry"]["coordinates"];
                     geojsonPolygon = L.polygon(coordinates, {color: 'blue'});    //assign the global var
                     geojsonPolygon.addTo(mymap);
@@ -843,17 +893,16 @@ input:checked + .slider:before {
                 fileReader.onerror = function() {
                   alert(fileReader.error);
                 };
-            });
+
+            } else {
+                window.alert("Please input a geotif or geojson file")
+            }
+        });
+
+
             //jacks end
 
-        var layer;
-        var rectangle;
 
-        var upperleft = "";
-        var upperright = "";
-        var lowerleft = "";
-        var lowerright = "";
-        //Important: Here processes the geoTiff data
 
         function addLayer() {
                 console.log("current layer ", layer);
@@ -888,6 +937,7 @@ input:checked + .slider:before {
                              // pixelValuesToColorFn: values => `hsl(120,100%,${(1 - values[0] / max_value / 2) * 100}%)`,
                              resolution: 256
                          });
+                         geotiffLayer = layer;
                          console.log("layer:", layer);
                          layer.addTo(mymap);
 
@@ -920,6 +970,7 @@ input:checked + .slider:before {
 
 
         var hasGeotiffFile = false;
+        var geotiffLayer;
        //Important: Here processes the geoTiff data
         document.getElementById("geotiff-file").addEventListener("change", function(event) {
             console.log("added a geotiff file")
@@ -964,10 +1015,10 @@ input:checked + .slider:before {
                 if(document.getElementById('renderCheckbox').checked){
                     console.log("on");
                     addLayer();
-                    document.getElementById("topLeftLong").defaultValue = lowerleft;
-                    document.getElementById("topLeftLat").defaultValue = upperright;
-                    document.getElementById("bottomRightLong").defaultValue = upperleft;
-                    document.getElementById("bottomRightLat").defaultValue = lowerright;
+                    // document.getElementById("topLeftLong").defaultValue = lowerleft;
+                    // document.getElementById("topLeftLat").defaultValue = upperright;
+                    // document.getElementById("bottomRightLong").defaultValue = upperleft;
+                    // document.getElementById("bottomRightLat").defaultValue = lowerright;
                 }
                 else{
                     console.log("off");
@@ -976,10 +1027,10 @@ input:checked + .slider:before {
                     mymap.removeLayer(rectangle);
 
                     layer = 'undefined'
-                    document.getElementById("topLeftLong").defaultValue = "";
-                    document.getElementById("topLeftLat").defaultValue = "";
-                    document.getElementById("bottomRightLong").defaultValue = "";
-                    document.getElementById("bottomRightLat").defaultValue = "";
+                    // document.getElementById("topLeftLong").defaultValue = "";
+                    // document.getElementById("topLeftLat").defaultValue = "";
+                    // document.getElementById("bottomRightLong").defaultValue = "";
+                    // document.getElementById("bottomRightLat").defaultValue = "";
                 }
         });
 
@@ -1127,34 +1178,25 @@ input:checked + .slider:before {
             var savetoCSV = function() {
                 var all_markers_on_map_current = getAllMarkersOnMap()
                 //get the save value
-                //var zipName = document.getElementById("saveValue").value;
-                var zipName = "name";
-                // window.alert(zipName)
-                // // console.log(zipName);
-                // if(zipName == ""){
-                //     window.alert("please enter a name to save as")
-                //     return;
-                // }
-                // if(zipName == "save as"){
-                //     window.alert("please change the name to save as ")
-                //     return;
-                // }
-                // for (var i = 0; i < zipName.length; i++) {
-                //     if(zipName[i] == " "){
-                //         window.alert("Your name cannot have spaces")
-                //         return;
-                //     }
-                // }
-                // window.alert("saved")
-                // return;
+                console.log("save value object " +  document.getElementById('saveValue'))
+                var zipName = document.getElementById("saveValue").value;
+                // console.log(zipName);
+                if(zipName == ""){
+                    window.alert("please enter a name to save as")
+                    return;
+                }
+                if(zipName == "save as"){
+                    window.alert("please change the name to save as ")
+                    return;
+                }
+                for (var i = 0; i < zipName.length; i++) {
+                    if(zipName[i] == " "){
+                        window.alert("Your name cannot have spaces")
+                        return;
+                    }
+                }
+                window.alert("saved")
 
-
-                //make sure there are no spaces
-
-                var all_markers_on_map_current = getAllMarkersOnMap()
-                // alert("total markers on map: "+ all_markers_on_map_current.length)
-                // console.log(all_markers_on_map_current[0])
-                // console.log(JSON.stringify(all_markers_on_map_current))
                 $.ajax({
                     dataType: "json",
                     url: urlPrefix+"savetoCSV",
@@ -1166,17 +1208,29 @@ input:checked + .slider:before {
                         console.log(data);
                         const zip = new JSZip();
 
-                        zip.file("results.txt", "the average is 7 \n standard devation of 3 \n and the samples were 4, 5, 37, 2, 9, 10");
+                        if(results !== 'undefined'){
+                            zip.file("results.txt", results);
+                        }
+
+                        //read geojson test
+                        const geojsonfileReader = new FileReader();
+
+                        if(geojsonfile !== 'undefined'){
+                            geojsonfileReader.readAsArrayBuffer(geojsonfile);
+                            geojsonfileReader.addEventListener('load', async () => {
+                                const geojsonarrayBuffer = geojsonfileReader.result;
+                                console.log(geojsonarrayBuffer)
+                                const geojsonFileContents = new Blob([geojsonarrayBuffer], {type: 'application/vnd.geo+json'});
+                                zip.file("GISData.geojson", geojsonFileContents);
+                            });
+                        }
+
+
 
                         const fileReader = new FileReader();
                         const csvfileReader = new FileReader();
-                        var rows = [];
+                        var rows = [['', 'lat', 'lng']];
                         if(data.length != 0){
-                            var header = [];
-                            for(const [key, value] of Object.entries(data[0])) {
-                                header.push(key)
-                            }
-                            rows.push(header)
                             for(let i = 0; i < data.length; i++){
                                 var newrow = []
                                 newrow.push(i);
@@ -1187,7 +1241,7 @@ input:checked + .slider:before {
 
                             }
                         }
-                        let csvContent = "data:text/csv;charset=utf-8,";
+                        let csvContent = [];
 
                         rows.forEach(function(rowArray) {
                             let row = rowArray.join(",");
@@ -1206,19 +1260,53 @@ input:checked + .slider:before {
                                     const arrayBuffer = fileReader.result;
                                     const tifFileContent = new Blob([arrayBuffer], {type: 'image/tiff'});
                                     zip.file("georaster.tif", tifFileContent);
+                                    if(geojsonfile !== 'undefined'){
+                                        geojsonfileReader.readAsArrayBuffer(geojsonfile);
+                                        geojsonfileReader.addEventListener('load', async () => {
+                                            const geojsonarrayBuffer = geojsonfileReader.result;
+                                            console.log(geojsonarrayBuffer)
+                                            const geojsonFileContents = new Blob([geojsonarrayBuffer], {type: 'application/vnd.geo+json'});
+                                            zip.file("GISData.geojson", geojsonFileContents);
+                                            const zipFile = await zip.generateAsync({type: "blob"});
+                                            const link = document.createElement("a");
+                                            link.href = URL.createObjectURL(zipFile);
+                                            link.download = zipName;
+                                            link.click();
+                                        });
+                                    }
+                                    else{
+                                        if(geojsonfile !== 'undefined'){
+                                            geojsonfileReader.readAsArrayBuffer(geojsonfile);
+                                            geojsonfileReader.addEventListener('load', async () => {
+                                                const geojsonarrayBuffer = geojsonfileReader.result;
+                                                console.log(geojsonarrayBuffer)
+                                                const geojsonFileContents = new Blob([geojsonarrayBuffer], {type: 'application/vnd.geo+json'});
+                                                zip.file("GISData.geojson", geojsonFileContents);
+                                                const zipFile = await zip.generateAsync({type: "blob"});
+                                                const link = document.createElement("a");
+                                                link.href = URL.createObjectURL(zipFile);
+                                                link.download = zipName;
+                                                link.click();
+                                            });
+                                        }
+                                        else{
+                                            const zipFile = await zip.generateAsync({type: "blob"});
+                                            const link = document.createElement("a");
+                                            link.href = URL.createObjectURL(zipFile);
+                                            link.download = zipName;
+                                            link.click();
+                                        }
 
-                                    const zipFile = await zip.generateAsync({type: "blob"});
-                                    const link = document.createElement("a");
-                                    link.href = URL.createObjectURL(zipFile);
-                                    link.download = "files.zip";
-                                    link.click();
+                                    }
+
+
                                 });
 
                             } else {
                                 const zipFile = await zip.generateAsync({type: "blob"});
                                 const link = document.createElement("a");
                                 link.href = URL.createObjectURL(zipFile);
-                                link.download = "files.zip";
+                                link.download = zipName;
                                 link.click();
 
                             }
@@ -1226,27 +1314,12 @@ input:checked + .slider:before {
 
                         });
 
-
-
-
-
-                        // zip.file("georaster.tif", fileUrl);
-                        //zip all files together
-
-
-
                     },
                     error: function(xhr, status, error) {
                       console.log("in the error block xhr:" + xhr + "status: " + status +  " error:" + error);
 
-
-
-
                     }
                 });
-
-
-
 
             }
 
