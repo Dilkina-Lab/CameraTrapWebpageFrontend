@@ -250,9 +250,14 @@ input:checked + .slider:before {
         //import { writeArrayBuffer } from 'geotiff';
         //idea http://devmag.org.za/2009/05/03/poisson-disk-sampling/
 
-
+        var layer;
+        var upperleft;
+        var upperright;
+        var lowerleft;
+        var lowerright;
         var file = 'undefined';
         var geojsonfile = 'undefined'
+        var geojsonfileType;
         var results = 'undefined';
         function createConfigFile(){
             return 1;
@@ -374,7 +379,6 @@ input:checked + .slider:before {
             //addMarkersToPolygon(CamerasNumber);
 
             //for the TopLeft
-
             let TopLeftLat = document.getElementById("topLeftLat").value;
 
             //longitude
@@ -847,6 +851,7 @@ input:checked + .slider:before {
             console.log("GeoJsonFile:", geojsonfile["name"]);
             const myArray = geojsonfile["name"].split(".");
             if (myArray[1] == "tif") {
+                geojsonfileType = 'tif';
                 var reader = new FileReader();
                 reader.readAsArrayBuffer(geojsonfile);
                 reader.onloadend = function () {
@@ -877,6 +882,7 @@ input:checked + .slider:before {
                     });
                 }
             } else if (myArray[1] == "geojson") {
+                geojsonfileType = "geojson";
                 let fileReader = new FileReader();
                 fileReader.readAsText(geojsonfile);
                 fileReader.onload = function() {
@@ -903,7 +909,7 @@ input:checked + .slider:before {
             //jacks end
 
 
-
+        var layer;
         function addLayer() {
                 console.log("current layer ", layer);
                 //if layer exists, remove layer
@@ -1152,19 +1158,19 @@ input:checked + .slider:before {
                 currentConfigFile["K"] = "This worked!!";
                 console.log(currentConfigFile)
 
-                 $.ajax({
-                        dataType: "json",
-                        url: urlPrefix+"writeConfigFile",
-                        type: "POST",
-                        contentType: "application/json",
-                        data: JSON.stringify(Testing),
-                        success: async function (data) {
-                            console.log("saved to configFile");
-                        },
-                    error: function(xhr, status, error) {
-                      console.log("in the config file error block xhr:" + xhr + "status: " + status +  " error:" + error);
-                    }
-                 });
+                 // $.ajax({
+                 //        dataType: "json",
+                 //        url: urlPrefix+"writeConfigFile",
+                 //        type: "POST",
+                 //        contentType: "application/json",
+                 //        data: JSON.stringify(Testing),
+                 //        success: async function (data) {
+                 //            console.log("saved to configFile");
+                 //        },
+                 //    error: function(xhr, status, error) {
+                 //      console.log("in the config file error block xhr:" + xhr + "status: " + status +  " error:" + error);
+                 //    }
+                 // });
 
                 //put new data in
 
@@ -1176,9 +1182,10 @@ input:checked + .slider:before {
 
             // Function to save all markers on map to CSV file
             var savetoCSV = function() {
-                var all_markers_on_map_current = getAllMarkersOnMap()
+                var all_markers_on_map_current = getAllMarkersOnMap();
+                console.log(all_markers_on_map_current);
                 //get the save value
-                console.log("save value object " +  document.getElementById('saveValue'))
+                //console.log("save value object " +  document.getElementById('saveValue'))
                 var zipName = document.getElementById("saveValue").value;
                 // console.log(zipName);
                 if(zipName == ""){
@@ -1195,7 +1202,7 @@ input:checked + .slider:before {
                         return;
                     }
                 }
-                window.alert("saved")
+                //window.alert("saved")
 
                 $.ajax({
                     dataType: "json",
@@ -1208,25 +1215,14 @@ input:checked + .slider:before {
                         console.log(data);
                         const zip = new JSZip();
 
+                        //will always have results
                         if(results !== 'undefined'){
                             zip.file("results.txt", results);
                         }
 
-                        //read geojson test
+
+                        //will always have marker data
                         const geojsonfileReader = new FileReader();
-
-                        if(geojsonfile !== 'undefined'){
-                            geojsonfileReader.readAsArrayBuffer(geojsonfile);
-                            geojsonfileReader.addEventListener('load', async () => {
-                                const geojsonarrayBuffer = geojsonfileReader.result;
-                                console.log(geojsonarrayBuffer)
-                                const geojsonFileContents = new Blob([geojsonarrayBuffer], {type: 'application/vnd.geo+json'});
-                                zip.file("GISData.geojson", geojsonFileContents);
-                            });
-                        }
-
-
-
                         const fileReader = new FileReader();
                         const csvfileReader = new FileReader();
                         var rows = [['', 'lat', 'lng']];
@@ -1247,6 +1243,7 @@ input:checked + .slider:before {
                             let row = rowArray.join(",");
                             csvContent += row + "\r\n";
                         });
+                        console.log("creating files")
                         const csvfile = new File([csvContent], '/Users/nicolerussack/PycharmProjects/CameraTrapWebpge/cameratrapswebpage/markers.csv', { type: "text/csv" });
                         csvfileReader.readAsArrayBuffer(csvfile);
                         csvfileReader.addEventListener('load', async () => {
@@ -1254,6 +1251,7 @@ input:checked + .slider:before {
                             const csvblob = new Blob([csvarrayBuffer], {type: 'text/csv'});
                             zip.file("markers.csv", csvblob);
                             console.log("This is the file  " + file)
+                            //if geotif exists
                             if (file !== 'undefined') {
                                 fileReader.readAsArrayBuffer(file);
                                 fileReader.addEventListener('load', async () => {
@@ -1262,21 +1260,7 @@ input:checked + .slider:before {
                                     zip.file("georaster.tif", tifFileContent);
                                     if(geojsonfile !== 'undefined'){
                                         geojsonfileReader.readAsArrayBuffer(geojsonfile);
-                                        geojsonfileReader.addEventListener('load', async () => {
-                                            const geojsonarrayBuffer = geojsonfileReader.result;
-                                            console.log(geojsonarrayBuffer)
-                                            const geojsonFileContents = new Blob([geojsonarrayBuffer], {type: 'application/vnd.geo+json'});
-                                            zip.file("GISData.geojson", geojsonFileContents);
-                                            const zipFile = await zip.generateAsync({type: "blob"});
-                                            const link = document.createElement("a");
-                                            link.href = URL.createObjectURL(zipFile);
-                                            link.download = zipName;
-                                            link.click();
-                                        });
-                                    }
-                                    else{
-                                        if(geojsonfile !== 'undefined'){
-                                            geojsonfileReader.readAsArrayBuffer(geojsonfile);
+                                        if(geojsonfileType == "geojson"){
                                             geojsonfileReader.addEventListener('load', async () => {
                                                 const geojsonarrayBuffer = geojsonfileReader.result;
                                                 console.log(geojsonarrayBuffer)
@@ -1285,24 +1269,71 @@ input:checked + .slider:before {
                                                 const zipFile = await zip.generateAsync({type: "blob"});
                                                 const link = document.createElement("a");
                                                 link.href = URL.createObjectURL(zipFile);
+                                                console.log("here");
+                                                link.download = zipName;
+                                                link.click();
+                                            });
+
+                                        }
+                                        else{
+                                            geojsonfileReader.addEventListener('load', async () => {
+                                                const arrayBuffer = geojsonfileReader.result;
+                                                const tifFileContent = new Blob([arrayBuffer], {type: 'image/tiff'});
+                                                zip.file("GISData.tif", tifFileContent);
+                                                const zipFile = await zip.generateAsync({type: "blob"});
+                                                const link = document.createElement("a");
+                                                link.href = URL.createObjectURL(zipFile);
+                                                console.log("here");
                                                 link.download = zipName;
                                                 link.click();
                                             });
                                         }
-                                        else{
-                                            const zipFile = await zip.generateAsync({type: "blob"});
-                                            const link = document.createElement("a");
-                                            link.href = URL.createObjectURL(zipFile);
-                                            link.download = zipName;
-                                            link.click();
-                                        }
-
                                     }
-
+                                    else{
+                                        const zipFile = await zip.generateAsync({type: "blob"});
+                                        const link = document.createElement("a");
+                                        link.href = URL.createObjectURL(zipFile);
+                                        link.download = zipName;
+                                        link.click();
+                                    }
 
                                 });
 
-                            } else {
+                            }
+                            else if(geojsonfile !== 'undefined'){
+                                console.log("in here")
+                                geojsonfileReader.readAsArrayBuffer(geojsonfile);
+                                if(geojsonfileType == "geojson"){
+                                    geojsonfileReader.addEventListener('load', async () => {
+                                        const geojsonarrayBuffer = geojsonfileReader.result;
+                                        console.log(geojsonarrayBuffer)
+                                        const geojsonFileContents = new Blob([geojsonarrayBuffer], {type: 'application/vnd.geo+json'});
+                                        zip.file("GISData.geojson", geojsonFileContents);
+                                        const zipFile = await zip.generateAsync({type: "blob"});
+                                        const link = document.createElement("a");
+                                        link.href = URL.createObjectURL(zipFile);
+                                        link.download = zipName;
+                                        link.click();
+                                    });
+
+                                }
+                                else{
+                                    geojsonfileReader.addEventListener('load', async () => {
+                                        const arrayBuffer = geojsonfileReader.result;
+                                        const tifFileContent = new Blob([arrayBuffer], {type: 'image/tiff'});
+                                        zip.file("GISData.tif", tifFileContent);
+                                        const zipFile = await zip.generateAsync({type: "blob"});
+                                        const link = document.createElement("a");
+                                        link.href = URL.createObjectURL(zipFile);
+                                        link.download = zipName;
+                                        link.click();
+                                    });
+
+                                }
+
+                            }
+
+                            else {
                                 const zipFile = await zip.generateAsync({type: "blob"});
                                 const link = document.createElement("a");
                                 link.href = URL.createObjectURL(zipFile);
@@ -1322,6 +1353,32 @@ input:checked + .slider:before {
                 });
 
             }
+
+
+            /*
+            * //check geojson -> is it a geojson or a geotiff
+                        const geojsonfileReader = new FileReader();
+
+                        if(geojsonfile !== 'undefined'){
+                            geojsonfileReader.readAsArrayBuffer(geojsonfile);
+                            if(geojsonfileType == "geojson"){
+                                geojsonfileReader.addEventListener('load', async () => {
+                                    const geojsonarrayBuffer = geojsonfileReader.result;
+                                    console.log(geojsonarrayBuffer)
+                                    const geojsonFileContents = new Blob([geojsonarrayBuffer], {type: 'application/vnd.geo+json'});
+                                    zip.file("GISData.geojson", geojsonFileContents);
+                                });
+
+                            }
+                            else{
+                                geojsonfileReader.addEventListener('load', async () => {
+                                    const arrayBuffer = geojsonfileReader.result;
+                                    const tifFileContent = new Blob([arrayBuffer], {type: 'image/tiff'});
+                                    zip.file("georaster.tif", tifFileContent);
+                                });
+
+                            }
+                        }*/
 
 
             function checkForBounds (){
@@ -1346,6 +1403,11 @@ input:checked + .slider:before {
 
             }
             var analyzeLocations = function() {
+
+
+
+                //end of test code
+
                 let pointsOutsideBounds = checkForBounds()
                 if(pointsOutsideBounds > 0 ){
 
@@ -1382,6 +1444,42 @@ input:checked + .slider:before {
                     contentType: "application/json",
                     data: JSON.stringify(all_markers_on_map_current),
                     success: async function (data) {
+                        console.log("wrote to txt worked")
+
+                        //need to get the geotiff file converted
+                        if(!hasGeotiffFile) {
+                            window.alert("Please enter a geotiff file")
+                            document.getElementById("analuzebutton").style.backgroundColor = "grey";
+                            return;
+                        }
+
+
+                        //maybe alret error if any of these are not right and return, otherwise it can run!!
+                        //need to change the config file
+                        //read in the currect config file as a json
+                        const JsonFileReader = new FileReader();
+
+                        //edit the correct values
+                        //need to change
+                        //re write it to the config file
+                        console.log("Saving config file")
+                        SavConfigFile();
+
+                        $.ajax({
+                            dataType: "text",
+                            url: urlPrefix+"analyzeLocations",
+                            type: "POST",
+                            contentType: "application/json",
+                            data: "hello",
+                            success: function(data) {
+                                console.log("finished analysing locations");
+                                console.log(data);
+                                document.getElementById("analuzebutton").style.backgroundColor = "grey";
+                                window.alert(data);
+                                results = data;
+                            },
+                            error: notifyFail
+                        });
 
                     },
                     error: function(xhr, status, error) {
@@ -1391,40 +1489,6 @@ input:checked + .slider:before {
                 });
 
 
-                //need to get the geotiff file converted
-                if(!hasGeotiffFile) {
-                    window.alert("Please enter a geotiff file")
-                    document.getElementById("analuzebutton").style.backgroundColor = "grey";
-                    return;
-                }
-
-
-                //maybe alret error if any of these are not right and return, otherwise it can run!!
-                //need to change the config file
-                //read in the currect config file as a json
-                const JsonFileReader = new FileReader();
-
-                //edit the correct values
-                //need to change
-                //re write it to the config file
-                console.log("Saving config file")
-                SavConfigFile();
-
-                $.ajax({
-                    dataType: "text",
-                    url: urlPrefix+"analyzeLocations",
-                    type: "POST",
-                    contentType: "application/json",
-                    data: "hello",
-                    success: function(data) {
-                        console.log("finished analysing locations");
-                        console.log(data);
-                        document.getElementById("analuzebutton").style.backgroundColor = "grey";
-                        window.alert(data);
-                        results = data;
-                    },
-                    error: notifyFail
-                });
 
 
             }

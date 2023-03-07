@@ -55,6 +55,7 @@ if __name__ == '__main__':
 
     @webapp.route('/')
     def index():
+        print("in bottle running")
         return bottle.static_file("index.html", root='static/html')
 
     # @webUIapp.route('/<filename:re:raster\/test2.tiff>')
@@ -107,27 +108,23 @@ if __name__ == '__main__':
         return s
 
 
-    @webapp.route('/writeConfigFile', method='POST')
-    def writeConfigFile():
-        print("In write config file")
-        data = bottle.request.json
-        s = json.dumps(data)
-        print("this is the data " + s)
-        df = pd.read_json(s)
-        df.to_csv('config.csv')
-        bottle.response.content_type = 'application/json'
-        bottle.response.status = 200
-        return s
+    # @webapp.route('/writeConfigFile', method='POST')
+    # def writeConfigFile():
+    #     print("In write config file")
+    #     data = bottle.request.json
+    #     s = json.dumps(data)
+    #     print("this is the data " + s)
+    #     df = pd.read_json(s)
+    #     df.to_csv('config.csv')
+    #     bottle.response.content_type = 'application/json'
+    #     bottle.response.status = 200
+    #     return s
 
 
     @webapp.route('/analyzeLocations', method='POST')
     def analyzeLocations():
         print("in analyzeLocations")
         data = simulate_estimate.testFunction()
-        # with open(filename) as f:
-        #     code = f.read()
-        #
-        # a = exec(code)
         print("This is the reusel " + str(data))
         return data
 
